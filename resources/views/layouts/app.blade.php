@@ -3,19 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>{{ config('app.name', 'Laravel') }}</title>
-
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
-
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
@@ -55,13 +49,36 @@
                     </form>
                 @endif
             </div>
-
         @endguest
-
     </header>
 </div>
 <div class="container">
-    @yield('content')
+    <div class="row">
+        <div class="col-12 col-lg-10">
+            @yield('content')
+        </div>
+        <div class="col-12 col-lg-2">
+            @if (count($recent_pastes) > 0)
+                <h6>Public pastes</h6>
+                @foreach ($recent_pastes as $paste)
+                    <p class="mb-0">
+                        <a href="{{url("/{$paste->url_path}")}}">{{ $paste->name }}</a><br>
+                        <small class="text-muted text-capitalize fs-7">{{ $paste->language }} | {{ $paste->created_at->diffForHumans() }}</small>
+                    </p>
+                @endforeach
+            @endif
+            @if (isset($recent_user_pastes) and count($recent_user_pastes) > 0)
+                <hr>
+                <h6 class="mt-2">Your pastes</h6>
+                @foreach ($recent_user_pastes as $paste)
+                    <p class="mb-0">
+                        <a href="{{url("/{$paste->url_path}")}}">{{ $paste->name }}</a><br>
+                        <small class="text-muted text-capitalize fs-7">{{ $paste->language }} | {{ $paste->created_at->diffForHumans() }}</small>
+                    </p>
+                @endforeach
+            @endif
+        </div>
+    </div>
 </div>
 </body>
 </html>

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Paste;
+use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -17,12 +20,17 @@ class HomeController extends Controller
     }
 
     /**
-     * Show the application dashboard.
+     * Show the user pastes list.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return Renderable
      */
     public function index()
     {
-        return view('home');
+        $date = Carbon::now();
+        $user_pastes = Paste::whereNull('expires_at')
+            ->orWhere(function($query) use ($date) {
+                $query->where('expires_at', '>=',$date);
+            })->where('user_id',Auth::id())->paginate(2);
+        return view('home',['pastes'=>$user_pastes]);
     }
 }
